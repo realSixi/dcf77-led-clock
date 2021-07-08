@@ -7,6 +7,24 @@ The intention is *not* to simple show the current time, but to show the single (
 
 Find more Information about DCF77 at Wikipedia: https://en.wikipedia.org/wiki/DCF77
 
+## Visualization
+
+In the picture below the time is 21:33. The 'white' pixels show the current time in the style of an analog clock: Minutes are at 33 and the hours are between 8 and 9 - like the clock-indicator of an analog watch.
+
+Every "Block" is shown in alternating colors (yellow / blue). E.g. the first yellow block is the one-block of minutes (here 0100 = 4, means after the full circle the next one part of minute is 4).
+
+There are 3 bits that are used as parity bits (green pixels in the image).
+
+The second is indicated with a slightly lighter / darker pixel that's moving (hard to see in a still image).
+
+### Limitations
+
+This implementation does *not* always show the correct time:
+- the 'white' indicators are only refreshed after a full circle (as intended by dcf77 protocol), but only if the parity bits are correct.
+- if a partity bit is wrong, the indications 'lags' behind the real time. But due 
+- due the source is a websocket... wrong data is really rare ;)
+- if the websocket connection is interrupted: you'll be timeless. grap yourself a coffee and relax ;)
+
 
 ![3D Printed Clock](./static/dcf77-clock.jpeg)
 
