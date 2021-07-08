@@ -21,7 +21,7 @@ The second is indicated with a slightly lighter / darker pixel that's moving (ha
 
 This implementation does *not* always show the correct time:
 - the 'white' indicators are only refreshed after a full circle (as intended by dcf77 protocol), but only if the parity bits are correct.
-- if a partity bit is wrong, the indications 'lags' behind the real time. But due 
+- if a partity bit is wrong, the indications 'lags' behind the real time
 - due the source is a websocket... wrong data is really rare ;)
 - if the websocket connection is interrupted: you'll be timeless. grap yourself a coffee and relax ;)
 
