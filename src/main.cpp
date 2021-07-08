@@ -151,7 +151,7 @@ void drawPixel(int pos, int value) {
   if (value == 0) {
     brightness = 50;
   } else if (value == 1) {
-    brightness = 150;
+    brightness = 140;
   }
 
   if (pos <= 20) {  // start bit, weather/warning informations and shift-second
@@ -223,12 +223,11 @@ void drawPixel(int pos, int value) {
     if (value == 0) {                // if value is 0 - blend to darker color
       ledColors[pos] = sqrtBlend(ledColors[pos], CHSV(hue, sat, 15), 10);
     } else {  // if value is 1 - blend to lighter color
-      ledColors[pos] = sqrtBlend(ledColors[pos], CHSV(hue, sat, 250), 2);
+      ledColors[pos] = sqrtBlend(ledColors[pos], CHSV(hue, 00, 255), 2);
     }
-  } else if (pos ==
-             dcf77.getPosition() -
-                 1) {  // last bit, fade it to default set color/brightness
-    ledColors[pos] = sqrtBlend(ledColors[pos], CHSV(hue, sat, brightness), 120);
+  } else if (pos == dcf77.getPosition() - 1) {
+    // last bit, fade it to default set color/brightness
+    ledColors[pos] = sqrtBlend(ledColors[pos], CHSV(hue, sat, brightness), 50);
   } else {  // set to calculated value
     ledColors[pos] = CHSV(hue, sat, brightness);
   }
@@ -259,6 +258,8 @@ void drawHour() {
   if (realMinutes > 40) {
     led++;
   }
+
+  led = led % HOUR_LEDS;
 
   // draw the clock indicators
   for (int i = 0; i <= HOUR_LEDS; i += 2) {

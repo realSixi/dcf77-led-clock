@@ -1,8 +1,6 @@
 #include "dcf77.h"
 
-
 void DCF77Clock::handlePulse(int pulseLength, int pause) {
-  
   if (pulseLength < 150) {
     data &= ~(1LLU << pos);
   } else if (pulseLength < 250) {
@@ -18,23 +16,22 @@ void DCF77Clock::handlePulse(int pulseLength, int pause) {
     pos = 0;
     rotated = true;
 
-    if (this->getBit(58) == this->parity(36, 57)) {
-      if (this->getBit(28) == this->parity(21, 27)) {
-        realMinutes = getMinutes();
-      }
-      if (this->getBit(35) == this->parity(29, 34)) {
-        realHours = getHours();
+    if (this->getBit(20) == 1) {  // check if start of time is set correctly
+      if (this->getBit(58) == this->parity(36, 57)) {    // parity for date
+        if (this->getBit(28) == this->parity(21, 27)) {  // parity for minute
+          realMinutes = getMinutes();
+        }
+        if (this->getBit(35) == this->parity(29, 34)) {  // parity for hour
+          realHours = getHours();
+        }
       }
     }
   }
 };
 
-
-
 int DCF77Clock::getPosition() { return (pos + 59) % 60; }
 
 boolean DCF77Clock::hasRotated() { return rotated; };
-
 
 int DCF77Clock::getBit(int pos) { return bitRead(data, pos); }
 
