@@ -10,10 +10,10 @@
 
 DCF77Clock dcf77;
 
-#define NUM_LEDS 60
+#define LED_PIN D4
+
+#define MINUTE_LEDS 60
 #define HOUR_LEDS 24
-#define HOUR_OFFSET 60
-#define TOTAL_LEDS 84
 
 #define HUE_GROUP1 145
 #define HUE_GROUP2 50
@@ -24,6 +24,8 @@ DCF77Clock dcf77;
 
 void drawHour();
 void drawPixel(int pos, int value);
+
+void webSocketEvent(WStype_t type, uint8_t* payload, size_t length);
 
 // some helper functions, see implementation at end of the file
 void nblendU8TowardU8(uint8_t& cur, const uint8_t target, uint8_t amount);
@@ -39,51 +41,17 @@ CHSV sqrtBlend(CHSV a, CHSV b, uint8_t t);
  *
  *  sync from ledColors -> leds is being done at the end the drawPixel call
  */
-CRGB leds[TOTAL_LEDS];
-CHSV ledColors[NUM_LEDS];
+CRGB leds[MINUTE_LEDS + HOUR_LEDS];
+CHSV ledColors[MINUTE_LEDS];
 
 WiFiClient wifi;
 WebSocketsClient webSocket;
-
-void webSocketEvent(WStype_t type, uint8_t* payload, size_t length) {
-  switch (type) {
-    case WStype_DISCONNECTED:
-      Serial.printf("[WSc] Disconnected!\n");
-      break;
-    case WStype_CONNECTED: {
-      Serial.printf("[WSc] Connected to url: %s\n", payload);
-    } break;
-    case WStype_TEXT: {
-      StaticJsonDocument<200> doc;
-      deserializeJson(doc, payload);
-
-      if (doc["Type"] == 1) {
-        int pulseLength = doc["Pulse"].as<int>();
-        int pause = doc["Pause"].as<int>();
-        dcf77.handlePulse(pulseLength, pause);
-      }
-
-      break;
-    }
-    case WStype_BIN:
-      Serial.printf("[WSc] get binary length: %u\n", length);
-      break;
-    case WStype_PING:
-      Serial.printf("[WSc] get ping\n");
-      break;
-    case WStype_PONG:
-      Serial.printf("[WSc] get pong\n");
-      break;
-    case WStype_ERROR:
-      Serial.printf("[WSc] got Error\n");
-  }
-}
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Starting...");
 
-  FastLED.addLeds<WS2812B, D4, GRB>(leds, TOTAL_LEDS);
+  FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, MINUTE_LEDS + HOUR_LEDS);
 
   delay(100);
   FastLED.clear();
@@ -98,8 +66,8 @@ void setup() {
     Serial.print(".");
     leds[connectionLed] = CRGB::Red;
 
-    fadeToBlackBy(leds, NUM_LEDS, 20);
-    connectionLed = (connectionLed + 1) % NUM_LEDS;
+    fadeToBlackBy(leds, MINUTE_LEDS, 20);
+    connectionLed = (connectionLed + 1) % MINUTE_LEDS;
     FastLED.show();
     FastLED.delay(20);
   }
@@ -115,7 +83,7 @@ void setup() {
   webSocket.onEvent(webSocketEvent);
 
   // initialize the shadow-led array
-  for (int i = 0; i < NUM_LEDS; i++) {
+  for (int i = 0; i < MINUTE_LEDS; i++) {
     ledColors[i] = CHSV(0, 0, 0);
   }
 }
@@ -124,7 +92,7 @@ void loop() {
   webSocket.loop();
   ArduinoOTA.handle();
 
-  for (int i = 0; i < NUM_LEDS; i++) {
+  for (int i = 0; i < MINUTE_LEDS; i++) {
     drawPixel(i, dcf77.getBit(i));
   }
   drawHour();
@@ -237,7 +205,44 @@ void drawPixel(int pos, int value) {
 
   // overwrite the current minute with bright white color
   if (pos == dcf77.getRealMinutes()) {
-    leds[pos] = CHSV(0, 0, 200);
+    leds[pos] = CHSV(0, 0, 180);
+  }
+}
+
+/*
+ * handle websocket events and pass them to the dcf77 module
+ */
+void webSocketEvent(WStype_t type, uint8_t* payload, size_t length) {
+  switch (type) {
+    case WStype_DISCONNECTED:
+      Serial.printf("[WSc] Disconnected!\n");
+      break;
+    case WStype_CONNECTED: {
+      Serial.printf("[WSc] Connected to url: %s\n", payload);
+    } break;
+    case WStype_TEXT: {
+      StaticJsonDocument<200> doc;
+      deserializeJson(doc, payload);
+
+      if (doc["Type"] == 1) {
+        int pulseLength = doc["Pulse"].as<int>();
+        int pause = doc["Pause"].as<int>();
+        dcf77.handlePulse(pulseLength, pause);
+      }
+
+      break;
+    }
+    case WStype_BIN:
+      Serial.printf("[WSc] get binary length: %u\n", length);
+      break;
+    case WStype_PING:
+      Serial.printf("[WSc] get ping\n");
+      break;
+    case WStype_PONG:
+      Serial.printf("[WSc] get pong\n");
+      break;
+    case WStype_ERROR:
+      Serial.printf("[WSc] got Error\n");
   }
 }
 
@@ -264,18 +269,18 @@ void drawHour() {
   // draw the clock indicators
   for (int i = 0; i <= HOUR_LEDS; i += 2) {
     if (i != led) {
-      leds[i + HOUR_OFFSET] = CHSV(145, 255, 50);
+      leds[i + MINUTE_LEDS] = CHSV(145, 255, 50);
     }
   }
 
   // slowly fade down all clock-leds for transition
-  for (int i = HOUR_OFFSET; i <= HOUR_LEDS + HOUR_OFFSET; i++) {
+  for (int i = MINUTE_LEDS; i <= HOUR_LEDS + MINUTE_LEDS; i++) {
     leds[i].fadeToBlackBy(10);
   }
 
   // set the led for the realHour
   if (realHour != -1) {
-    leds[led + HOUR_OFFSET] = CHSV(255, 0, 200);
+    leds[led + MINUTE_LEDS] = CHSV(255, 0, 180);
   }
 }
 

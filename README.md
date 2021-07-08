@@ -44,6 +44,12 @@ Find the STL Files in the [3D-Parts](./3d-parts) Folder.
 
 There are multiple shops that deliver WS2812/Neopixel Rings (to Germany). Here is a short, uncomplete list. Just search for 'ws2812 ring' and you find a bunch of suppliers ;)
 
+Solder the LED Rings together in a 'chain':
+- LED 0-59 (the "minute" ring)
+- LED 60-83 (the "hour" ring)
+
+Data OUT of the large ring must be connected to Data IN of the small ring. Connect the Data IN Pin of the large ring to the ESP (default: D4) and the GNC/VCC accordingly.
+
 #### 60 LED Ring
 
 - https://www.funduinoshop.com/WS2812-LEDs-mit-60-Pixeln
@@ -63,7 +69,10 @@ There are multiple shops that deliver WS2812/Neopixel Rings (to Germany). Here i
 ### Setup
 
 1. Rename the `credentials_example.h` in the root folder to `credentials.h` and set your WiFi credentials.
-2. Run with PlatformIO.
+2. Set the LED_PIN if you use a different PIN than D4
+3. Run with PlatformIO.
+
+
 
 ### Used Libraries / Tools
 
