@@ -7,6 +7,9 @@ The intention is *not* to simple show the current time, but to show the single (
 
 Find more Information about DCF77 at Wikipedia: https://en.wikipedia.org/wiki/DCF77
 
+[![YouTube: ESP8266 Projekt: DCF77 Visualisierung](https://img.youtube.com/vi/JKQQ1zitYd8/0.jpg)](https://www.youtube.com/watch?v=JKQQ1zitYd8)
+Video: https://www.youtube.com/watch?v=JKQQ1zitYd8
+
 ## Visualization
 
 In the picture below the time is 21:33. The 'white' pixels show the current time in the style of an analog clock: Minutes are at 33 and the hours are between 8 and 9 - like the clock-indicator of an analog watch.
