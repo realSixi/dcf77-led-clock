@@ -12,7 +12,7 @@ Video: https://www.youtube.com/watch?v=JKQQ1zitYd8
 
 ## Visualization
 
-In the picture below the time is 21:33. The 'white' pixels show the current time in the style of an analog clock: Minutes are at 33 and the hours are between 8 and 9 - like the clock-indicator of an analog watch.
+In the picture below the time is 20:33 (or 8:33). The 'white' pixels show the current time in the style of an analog clock: Minutes are at 33 and the hours are between 8 and 9 - like the clock-indicator of an analog watch.
 
 Every "Block" is shown in alternating colors (yellow / blue). E.g. the first yellow block is the one-block of minutes (here 0100 = 4, means after the full circle the next one part of minute is 4).
 
