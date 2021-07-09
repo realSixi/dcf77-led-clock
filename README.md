@@ -37,8 +37,8 @@ This implementation does *not* always show the correct time:
 
 Find the STL Files in the [3D-Parts](./3d-parts) Folder. 
 
-- Printed with a Prusa MK3S+ with PETG Filament
-- The "Shader" is printed with white PETG
+- Printed with a Prusa MK3S+ with PETG Filament and 0.6mm Nozzle
+- The "Shader" is printed with white PETG 
 
 ![3D Printed Clock](./static/rendered_image.png)
 
